@@ -16,8 +16,10 @@ app.use(express.urlencoded({ extended: false }))
 
 app.get('/', async (req, res) => {
   const rolloCountTotal = await MellosRollo.countDocuments()
-  const today = new Date()
-  const todayBeginning = new Date(today.getFullYear(), today.getMonth(), today.getDay()).getTime()
+
+  const todayBeginning = new Date()
+  todayBeginning.setUTCHours(0,0,0,0)
+
   const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning} }).countDocuments()
   res.render('index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
 })
