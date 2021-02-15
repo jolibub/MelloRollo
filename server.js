@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const basicAuth = require('express-basic-auth')
 const MellosRollo = require('./models/mellosRollo')
 const app = express()
 
@@ -13,6 +14,10 @@ mongoose.connect('mongodb://localhost/mellosRollos', {
 
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
+app.use(basicAuth({
+  users: { 'fred': 'penis'},
+  challenge: true
+}))
 
 app.get('/', async (req, res) => {
   const rolloCountTotal = await MellosRollo.countDocuments()
