@@ -1,6 +1,5 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const basicAuth = require('express-basic-auth')
 const creds = require('./creds')
 const MellosRollo = require('./models/mellosRollo')
 const app = express()
@@ -15,10 +14,6 @@ mongoose.connect('mongodb://localhost/mellosRollos', {
 
 app.set('view engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
-app.use(basicAuth({
-  users: creds,
-  challenge: true
-}))
 
 app.get('/', async (req, res) => {
   const rolloCountTotal = await MellosRollo.countDocuments()
@@ -27,11 +22,28 @@ app.get('/', async (req, res) => {
   todayBeginning.setUTCHours(0,0,0,0)
 
   const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning} }).countDocuments()
+
+  console.log(req.headers)
   res.render('index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
 })
 
 app.get('/rollo', (req, res) => {
-  res.render('rollo')
+  if(req.headers.authorization) {
+      autharr = req.headers.authorization.split(' ')
+
+      Object.entries(creds).forEach(([key, value]) => {
+      const buf = Buffer.from(`${key}:${value}`, 'utf-8')
+
+      if(buf.toString('base64') === autharr[1]){
+        res.status(400)
+        res.render('rollo')
+      }
+      })
+  }
+    res.header({
+      'WWW-Authenticate': 'Basic'
+    })
+    res.status(401).send('Unauthorized')
 })
 
 app.post('/addRollo', async (req, res) => {
