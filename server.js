@@ -2,9 +2,10 @@ const express = require('express')
 const mongoose = require('mongoose')
 const creds = require('./creds')
 const MellosRollo = require('./models/mellosRollo')
+const config = require('./config.json')
 const app = express()
 
-mongoose.connect('mongodb://localhost/mellosRollos', {
+mongoose.connect(config.databaseconnection, {
   useNewUrlParser: true, useUnifiedTopology: true
 }).then(() => {
   console.log('Connected to Database')
@@ -30,11 +31,12 @@ app.get('/rollo', (req, res) => {
   if(req.headers.authorization) {
       autharr = req.headers.authorization.split(' ')
 
+      //Converts credentials from file to base64 encode string
       Object.entries(creds).forEach(([key, value]) => {
       const buf = Buffer.from(`${key}:${value}`, 'utf-8')
 
       if(buf.toString('base64') === autharr[1]){
-        res.status(400).render('rollo')
+        res.status(200).render('rollo')
       }
       })
   } else {

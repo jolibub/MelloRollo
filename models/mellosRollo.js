@@ -6,7 +6,7 @@ const mellosRolloSchema = new mongoose.Schema({
     required: true,
     default: () => {
       var d = new Date()
-      return  d.getTime()
+      return d.getTime()
     }
   }
 })
