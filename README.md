@@ -1,3 +1,6 @@
 # MelloRollo
 
-Just 'cause
+## Description
+
+A little dashboard about the amount of "rollos" one of my friend consumes.
+
