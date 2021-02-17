@@ -23,7 +23,6 @@ app.get('/', async (req, res) => {
 
   const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning} }).countDocuments()
 
-  console.log(req.headers)
   res.render('index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
 })
 
@@ -35,15 +34,15 @@ app.get('/rollo', (req, res) => {
       const buf = Buffer.from(`${key}:${value}`, 'utf-8')
 
       if(buf.toString('base64') === autharr[1]){
-        res.status(400)
-        res.render('rollo')
+        res.status(400).render('rollo')
       }
       })
-  }
+  } else {
     res.header({
       'WWW-Authenticate': 'Basic'
     })
-    res.status(401).send('Unauthorized')
+    res.status(401).render('unauthorized')
+  }
 })
 
 app.post('/addRollo', async (req, res) => {
