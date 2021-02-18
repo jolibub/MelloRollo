@@ -24,7 +24,7 @@ app.get('/', async (req, res) => {
 
   const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning} }).countDocuments()
 
-  res.render('index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
+  res.render(__dirname + '/views/index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
 })
 
 app.get('/rollo', (req, res) => {
@@ -36,14 +36,14 @@ app.get('/rollo', (req, res) => {
       const buf = Buffer.from(`${key}:${value}`, 'utf-8')
 
       if(buf.toString('base64') === autharr[1]){
-        res.status(200).render('rollo')
+        res.status(200).render(__dirname + '/views/rollo')
       }
       })
   } else {
     res.header({
       'WWW-Authenticate': 'Basic'
     })
-    res.status(401).render('unauthorized')
+    res.status(401).render(__dirname + '/views/unauthorized')
   }
 })
 
