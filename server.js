@@ -20,32 +20,62 @@ app.get('/', async (req, res) => {
   const rolloCountTotal = await MellosRollo.countDocuments()
 
   const todayBeginning = new Date()
-  todayBeginning.setUTCHours(0,0,0,0)
+  todayBeginning.setUTCHours(0, 0, 0, 0)
 
-  const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning} }).countDocuments()
+  const rolloCountToday = await MellosRollo.find({ rolloAteAt: { $gte: todayBeginning } }).countDocuments()
 
-  res.render(__dirname + '/views/index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday})
+  res.render(__dirname + '/views/index', { rolloCountTotal: rolloCountTotal, rolloCountToday: rolloCountToday })
 })
 
 app.get('/rollo', (req, res) => {
-  if(req.headers.authorization) {
-      autharr = req.headers.authorization.split(' ')
 
-      //Converts credentials from file to base64 encode string
-      Object.entries(creds).forEach(([key, value]) => {
+  let userAuthed = false
+  if (req.headers.authorization) {
+    autharr = req.headers.authorization.split(' ')
+    Object.entries(creds).forEach(([key, value]) => {
       const buf = Buffer.from(`${key}:${value}`, 'utf-8')
 
-      if(buf.toString('base64') === autharr[1]){
-        res.status(200).render(__dirname + '/views/rollo')
+      if (buf.toString('base64') === autharr[1]) {
+        userAuthed = true
       }
-      })
-  } else {
-    res.header({
-      'WWW-Authenticate': 'Basic'
     })
+  }
+
+  if (userAuthed) {
+    res.status(200).render(__dirname + '/views/rollo')
+  } else {
+    res.header({'WWW-Authenticate': 'Basic'})
     res.status(401).render(__dirname + '/views/unauthorized')
   }
+
 })
+
+//   if (req.headers.authorization) {
+//     autharr = req.headers.authorization.split(' ')
+//     const userAuthed = false
+
+//     //Converts credentials from file to base64 encode string
+//     Object.entries(creds).forEach(([key, value]) => {
+//       const buf = Buffer.from(`${key}:${value}`, 'utf-8')
+
+//       if (buf.toString('base64') === autharr[1]) {
+//         userAuthed = true
+//       }
+//     })
+
+//     if (userAuthed) {
+//       res.status(200).render(__dirname + '/views/rollo')
+//     } else {
+//       res.status(401).render(__dirname + '/views/unauthorized')
+//     }
+
+//   } else {
+//     res.header({
+//       'WWW-Authenticate': 'Basic'
+//     })
+//     res.status(401).render(__dirname + '/views/unauthorized')
+//   }
+// })
 
 app.post('/addRollo', async (req, res) => {
   await MellosRollo.create({})
